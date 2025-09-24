@@ -1,0 +1,454 @@
+html, body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    background-color: #fff!important;
+}
+
+/* Buttons CSS Start Here */
+/* Default state - gradient border with border-radius */
+.gradient-btn {
+  position: relative;
+  background: linear-gradient(159.21deg, #FFD200 11.19%, #F7971E 101.23%);
+  border: none;
+  border-radius: 6px;
+  padding: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.gradient-btn-content {
+  background: #000;
+  margin: 1px;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  color: #fff;
+  transition: all 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+/* Hover state - full gradient background */
+.gradient-btn:hover {
+  background: linear-gradient(159.21deg, #FFD200 11.19%, #F7971E 101.23%);
+}
+
+.gradient-btn:hover .gradient-btn-content {
+  background: transparent;
+  color: #000;
+  margin: 1px;
+  padding: 8px 16px;
+}
+
+/* Clicked/Active state - reversed gradient */
+.gradient-btn:active,
+.gradient-btn.clicked {
+  background: linear-gradient(159.21deg, #F7971E 11.19%, #FFD200 101.23%);
+}
+.gradient-btn:active .gradient-btn-content,
+.gradient-btn.clicked .gradient-btn-content {
+  background: transparent;
+  color: #000;
+  margin: 1px;
+  padding: 8px 16px;
+}
+@media screen and (max-width: 768px) {
+    .navbar .gradient-btn-content{
+        padding: 8px;
+    }
+}
+
+
+.secondary-gradient-btn {
+  position: relative;
+  background: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.secondary-gradient-btn-content {
+  background: #000;
+  margin: 1px;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  color: #fff;
+  transition: all 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+/* Hover state - white border and white background */
+.secondary-gradient-btn:hover {
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+}
+.secondary-gradient-btn:hover .secondary-gradient-btn-content {
+  background: #FFFFFF;
+  color: #000;
+  margin: 1px;
+  padding: 8px 16px;
+}
+
+/* Clicked/Active state - specific gradient */
+.secondary-gradient-btn:active,
+.secondary-gradient-btn.clicked {
+    background: linear-gradient(159.21deg, #979797 11.19%, #FFFFFF 101.23%);
+}
+.secondary-gradient-btn:active .secondary-gradient-btn-content,
+.secondary-gradient-btn.clicked .secondary-gradient-btn-content {
+  background: transparent;
+  color: #000;
+  margin: 1px;
+  padding: 8px 16px;
+}
+
+
+.gradient-text{
+      background: linear-gradient(159.21deg, #FFD200 11.19%, #F7971E 101.23%);
+      background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+
+
+.yellow-submit-btn {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(246, 173, 85, 0.3);
+        }
+
+        .yellow-submit-btn:hover {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(246, 173, 85, 0.4);
+        }
+
+        .yellow-submit-btn:active {
+            transform: translateY(0);
+        }
+
+/* Buttons CSS End Here */
+
+/* Home Page Hero Section */
+.hero_banner {
+    /* background:linear-gradient(90deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%), url('./assets/images/Hero_Image.webp'); */
+    background: url('./assets/images/Hero_Image_Org.webp');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: left;
+    width: 100%;
+    height: 100%;
+    /* padding: 8em 0; */
+}
+.telPhone:hover{
+    background: linear-gradient(159.21deg, #FFD200 11.19%, #F7971E 101.23%);;
+    color: #1A1A1A;
+    
+}
+.nav-link.active{
+    border-bottom: 2px solid transparent; /* Default transparent border */
+    border-image-source: linear-gradient(159.21deg, #FFD200 11.19%, #F7971E 101.23%);
+    border-image-slice: 1;
+}
+
+/* ProductListPage.jsx Additional CSS */
+#product_description h6,.product_description h6 {
+    margin-top: 1rem;
+    font-size: medium;
+}
+#product_description ul, #features ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+.product_description ul{
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Line clamping utility for consistent text heights */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Featured products section height fixes */
+.featured-product-card {
+    height: 320px;
+}
+
+.featured-product-image {
+    height: 192px; /* 12rem = h-48 */
+}
+
+/* How It Works Section CSS - Original Design with Responsive Enhancement */
+.easy-find h2{
+    position: relative;
+    padding-left: 50px;
+}
+.easy-find h2::before{
+    content: '';
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2em;
+    color: #000;
+    border: 1px solid #000;
+    width: 40px;
+
+
+}
+.steps {
+    margin: 40px 0 0;
+    display: flex;
+}
+.steps .step {
+    min-width: 300px;
+}
+.steps .step figure {
+    height: 170px;
+    margin: 0 0 40px;
+    width: 215px;
+}
+.steps .step div{
+    display: flex;
+    position: relative;
+}
+ .steps .step div {
+    padding-left: 30px;
+}
+.steps .step div:before {
+    border: 1px dashed #9ba5be;
+    content: "";
+    height: 0;
+    top: 24px;
+    width: 99%;
+    z-index: 2;
+    position: absolute;
+}
+.steps .step:first-of-type div:before {
+    left: 35px;
+    width: 300px;
+}
+ .steps .step div:before {
+    left: 0;
+}
+.steps .step div span {
+    color: #e3f1f4;
+    font: 8.5em/1 'Montserrat', sans-serif;
+    font-weight: 900;
+}
+.steps .step div span:after, .steps .step:first-of-type span:before, .steps .step:last-of-type span:before {
+    border-radius: 50%;
+    position: absolute;
+}
+.steps .step:first-of-type span:before, .steps .step:last-of-type span:before {
+    background: #9ba5be;
+    content: "";
+    height: 8px;
+    top: 21px;
+    width: 8px;
+}
+[dir=ltr] .steps .step:first-of-type span:before {
+    right: 75px;
+}
+.steps .step div span:after {
+    background-color: #132528;
+    content: "";
+    height: 22px;
+    top: 14px;
+    width: 22px;
+    z-index: 3;
+}
+[dir=ltr] .steps .step div span:after {
+    right: -36px;
+}
+.steps .step:last-of-type span:before {
+    right: 0px;
+}
+.steps .step div h5 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: .875em;
+    line-height: 18px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    margin-top: 58px;
+    max-width: 142px;
+    width: 100%;
+}
+[dir=ltr] .steps .step div h5 {
+    margin-left: 34px;
+} 
+ 
+
+
+/* BRANDS SECTION CSS */
+.brands{
+    position: relative;
+    background-color: #fff;
+    margin: auto;
+    padding: 96px 112px;
+}
+.brands .brands-col .authorized {
+    max-width: 50%;
+    position: absolute;
+    top: 0;
+}
+.brands .brands-col {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 64px;
+    text-align: center;
+}
+[dir=ltr] .brands .brands-col .authorized {
+    right: 0;
+}
+.brands .brands-col .trusted-brands {
+    max-width: 665px;
+}
+.brands .brands-col .authorized img {
+    max-width: 120px;
+}
+
+@media screen and (max-width: 768px) {
+    .brands{
+        padding: 48px 24px;
+    }
+    .brands .brands-col {
+        flex-direction: column;
+    }
+    .brands .brands-col .authorized {
+        position: static;
+        max-width: 100%;
+        margin-bottom: 32px;
+    }
+    .brands .brands-col .trusted-brands {
+        max-width: 100%;
+    }
+}
+
+.primaryBtn{
+    background: conic-gradient(from 167.85deg at 75.81% -16.57%, #EEBC70 -21.72deg, #E3A455 26.25deg, #FFEBC4 156.58deg, #D0A068 261.59deg, #EEBC70 338.28deg, #E3A455 386.25deg);
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    border: 2px solid;
+    border-image-source: conic-gradient(from 167.85deg at 75.81% -16.57%, #EEBC70 -21.72deg, #E3A455 26.25deg, #FFEBC4 156.58deg, #D0A068 261.59deg, #EEBC70 338.28deg, #E3A455 386.25deg);
+    border-color: transparent;
+    border-image-slice: 1;
+    border-radius: 16px;
+}
+
+/* Common CSS Code Here */
+/* View Details Text CSS */
+.view-details {
+        background: linear-gradient(159.21deg, #EEC712 11.19%, #CA7710 101.23%);
+            background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            /* transition: color 0.2s ease; */
+            flex: 1;
+            transition: width 0.6s ease-in-out;
+
+        }
+
+        .view-details:hover{
+        background: linear-gradient(159.21deg, #EEC712 11.19%, #CA7710 101.23%);
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+         /* border-bottom: 1px solid transparent;
+        border-image-source: linear-gradient(159.21deg, #FFD200 11.19%, #F7971E 101.23%);
+        border-image-slice: 1; */
+        }
+
+
+        .view-details::after {
+            content: '›';
+            font-size: 18px;
+            transition: transform 0.2s ease;
+        }
+
+
+        @media (max-width: 640px) {
+  .browse-grid-wrapper {
+    position: relative;
+    overflow: hidden;
+    max-height: 70vh; /* adjust for ~4.5–5.5 cards */
+    transition: max-height 0.5s ease;
+    margin-bottom: 40px; /* space for fade */
+  }
+ 
+  /* Fade inside wrapper */
+  .browse-grid-wrapper::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), white 90%);
+    pointer-events: none; /* ensures fade isn’t blocking clicks */
+    transition: opacity 0.3s ease;
+  }
+ 
+  .browse-grid-wrapper.expanded {
+    max-height: none;
+  }
+ 
+  .browse-grid-wrapper.expanded::after {
+    opacity: 0;
+    visibility: hidden;
+  }
+ 
+  /* Button is inline now, below the fade */
+  .view-more-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    border: solid 3px #5b5b5b;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+}
+
+/* End of Common CSS Code Here */
+ 

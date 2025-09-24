@@ -1,0 +1,434 @@
+/**
+ * ProductListing Component
+ * 
+ * Main component that orchestrates the entire product filtering system
+ * Manages state for taxonomy selection, filters, sorting, and pagination
+ */
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { Package, AlertCircle, Grid, List } from 'lucide-react';
+//import DebugPanel from './DebugPanel';
+
+// Import components
+import FilterPanel from './FiltersPanel';
+import ProductCard, { ProductCardSkeleton } from './ProductCard';
+import Pagination, { SimplePagination } from './Pagination';
+import LoadingSpinner from './LoadingSpinner';
+
+// Import services and utilities
+import { fetchProducts, fetchFilterOptions, testApiConnection } from '../services/api';
+import useDebounce from '../hooks/useDebounce';
+import { 
+  TAXONOMY_CONFIG, 
+  SORT_OPTIONS, 
+  API_CONFIG,
+  UI_CONFIG,
+  debugLog 
+} from '../constants/config';
+
+const ProductListing = () => {
+  // State Management
+  const [selectedTaxonomy, setSelectedTaxonomy] = useState(TAXONOMY_CONFIG[0].value);
+  const [filters, setFilters] = useState({});
+  const [sort, setSort] = useState({ orderby: 'date', order: 'desc' });
+  const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  
+  // Data State
+  const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [filterOptions, setFilterOptions] = useState(null);
+  
+  // Loading States
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [filtersLoading, setFiltersLoading] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
+  
+  // Error State
+  const [error, setError] = useState(null);
+  
+  // Debounced search value
+  const debouncedSearch = useDebounce(filters.search, UI_CONFIG.SEARCH_DEBOUNCE);
+
+  /**
+   * Test API connection on component mount
+   */
+  useEffect(() => {
+    const checkConnection = async () => {
+      const result = await testApiConnection();
+      if (!result.success) {
+        setError(`API Connection Failed: ${result.message}. Please check your WordPress site URL in the .env file.`);
+      }
+    };
+    checkConnection();
+  }, []);
+
+  /**
+   * Load filter options when taxonomy changes
+   */
+  useEffect(() => {
+    const loadFilterOptions = async () => {
+      setFiltersLoading(true);
+      setError(null);
+      
+      try {
+        debugLog('Loading filter options for taxonomy:', selectedTaxonomy);
+        const data = await fetchFilterOptions(selectedTaxonomy);
+        setFilterOptions(data);
+        debugLog('Filter options loaded:', data);
+      } catch (err) {
+        console.error('Failed to load filter options:', err);
+        setError(`Failed to load filters: ${err.message}`);
+        setFilterOptions(null);
+      } finally {
+        setFiltersLoading(false);
+      }
+    };
+    
+    loadFilterOptions();
+  }, [selectedTaxonomy]);
+
+  /**
+   * Load products based on current filters and pagination
+   */
+  useEffect(() => {
+    const loadProducts = async () => {
+      setProductsLoading(true);
+      setError(null);
+      
+      try {
+        // Build parameters object
+        const params = {
+          taxonomy: selectedTaxonomy,
+          page,
+          per_page: API_CONFIG.DEFAULT_PER_PAGE,
+          orderby: sort.orderby,
+          order: sort.order,
+          ...filters
+        };
+        
+        // Use debounced search value
+        if (debouncedSearch) {
+          params.search = debouncedSearch;
+        } else {
+          delete params.search;
+        }
+        
+        debugLog('Fetching products with params:', params);
+        
+        const data = await fetchProducts(params);
+        
+        setProducts(data.products);
+        setTotalProducts(data.total);
+        setTotalPages(data.totalPages);
+        
+        debugLog('Products loaded:', {
+          count: data.products.length,
+          total: data.total
+        });
+        
+      } catch (err) {
+        console.error('Failed to load products:', err);
+        setError(`Failed to load products: ${err.message}`);
+        setProducts([]);
+        setTotalProducts(0);
+        setTotalPages(0);
+      } finally {
+        setProductsLoading(false);
+        setInitialLoad(false);
+      }
+    };
+    
+    loadProducts();
+  }, [selectedTaxonomy, page, sort, filters, debouncedSearch]);
+
+  /**
+   * Reset page when filters or sort changes
+   */
+  useEffect(() => {
+    setPage(1);
+  }, [selectedTaxonomy, filters, sort]);
+
+  /**
+   * Handle taxonomy change (Sales/Rentals toggle)
+   */
+  const handleTaxonomyChange = useCallback((newTaxonomy) => {
+    setSelectedTaxonomy(newTaxonomy);
+    setFilters({}); // Clear filters when switching taxonomy
+    setPage(1);
+  }, []);
+
+  /**
+   * Handle sort change
+   */
+  const handleSortChange = useCallback((value) => {
+    const [orderby, order] = value.split('-');
+    setSort({ 
+      orderby, 
+      order: order || 'desc' 
+    });
+  }, []);
+
+  /**
+   * Handle page change
+   */
+  const handlePageChange = useCallback((newPage) => {
+    setPage(newPage);
+    // Scroll to top of product grid
+    document.getElementById('product-grid')?.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  }, []);
+
+  /**
+   * Refresh filter options
+   */
+  const refreshFilters = useCallback(async () => {
+    const data = await fetchFilterOptions(selectedTaxonomy);
+    setFilterOptions(data);
+  }, [selectedTaxonomy]);
+
+  // Get current taxonomy config
+  const currentTaxonomy = TAXONOMY_CONFIG.find(t => t.value === selectedTaxonomy);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Header Section */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Equipment Catalog
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Browse our extensive collection of industrial equipment
+          </p>
+          
+          {/* Taxonomy Toggle Buttons */}
+          <div className="flex flex-wrap gap-3 mb-6">
+            {TAXONOMY_CONFIG.map(taxonomy => (
+              <button
+                key={taxonomy.value}
+                onClick={() => handleTaxonomyChange(taxonomy.value)}
+                className={`
+                  px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2
+                  ${selectedTaxonomy === taxonomy.value
+                    ? 'bg-blue-600 text-white shadow-lg scale-105'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                  }
+                `}
+              >
+                <span className="text-lg">{taxonomy.icon}</span>
+                {taxonomy.label}
+              </button>
+            ))}
+          </div>
+          
+          {/* Controls Bar */}
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              {/* Results Count */}
+              <div className="flex items-center">
+                <span className="text-gray-600">
+                  {productsLoading ? (
+                    <span className="flex items-center">
+                      <LoadingSpinner size="small" />
+                      <span className="ml-2">Loading...</span>
+                    </span>
+                  ) : (
+                    <span>
+                      <span className="font-semibold text-gray-900">{totalProducts}</span> products found
+                    </span>
+                  )}
+                </span>
+              </div>
+              
+              {/* Sort and View Controls */}
+              <div className="flex items-center gap-3">
+                {/* View Mode Toggle */}
+                <div className="flex items-center bg-gray-100 rounded-md p-1">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded transition-colors ${
+                      viewMode === 'grid' 
+                        ? 'bg-white text-blue-600 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="Grid view"
+                  >
+                    <Grid className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded transition-colors ${
+                      viewMode === 'list' 
+                        ? 'bg-white text-blue-600 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="List view"
+                  >
+                    <List className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                {/* Sort Dropdown */}
+                <select
+                  value={`${sort.orderby}-${sort.order}`}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                >
+                  {SORT_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
+            <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">Error</p>
+              <p className="text-sm mt-1">{error}</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          
+          {/* Filters Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-4">
+              <FilterPanel
+                filters={filters}
+                setFilters={setFilters}
+                filterOptions={filterOptions}
+                isLoading={filtersLoading}
+                onRefresh={refreshFilters}
+              />
+            </div>
+          </div>
+          
+          {/* Products Section */}
+          <div className="lg:col-span-3" id="product-grid">
+            {initialLoad ? (
+              // Initial loading state
+              <div className="flex items-center justify-center py-12">
+                <LoadingSpinner size="large" message="Loading products..." />
+              </div>
+            ) : productsLoading ? (
+              // Loading skeleton
+              <div className={`
+                grid gap-6
+                ${viewMode === 'grid' 
+                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
+                  : 'grid-cols-1'
+                }
+              `}>
+                {[...Array(UI_CONFIG.SKELETON_CARDS)].map((_, index) => (
+                  <ProductCardSkeleton key={index} viewMode={viewMode} />
+                ))}
+              </div>
+            ) : products.length > 0 ? (
+              <>
+                {/* Products Grid/List */}
+                <div className={`
+                  grid gap-6
+                  ${viewMode === 'grid' 
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
+                    : 'grid-cols-1'
+                  }
+                `}>
+                  {products.map(product => (
+                    <ProductCard 
+                      key={product.id} 
+                      product={product}
+                      viewMode={viewMode}
+                      taxonomy={selectedTaxonomy}
+                      
+                    />
+                  ))}
+                </div>
+                
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-8">
+                    <Pagination
+                      currentPage={page}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                      isLoading={productsLoading}
+                    />
+                  </div>
+                )}
+              </>
+            ) : (
+              // No Products Found
+              <div className="bg-white rounded-lg shadow-md p-12 text-center">
+                <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No products found
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  Try adjusting your filters or search terms
+                </p>
+                {Object.keys(filters).length > 0 && (
+                  <button
+                    onClick={() => setFilters({})}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Clear All Filters
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Mobile Pagination (Bottom) */}
+        {totalPages > 1 && !productsLoading && products.length > 0 && (
+          <div className="lg:hidden mt-6">
+            <SimplePagination
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={totalProducts}
+              itemsPerPage={API_CONFIG.DEFAULT_PER_PAGE}
+              onPageChange={handlePageChange}
+              isLoading={productsLoading}
+            />
+          </div>
+        )}
+      </div>
+      
+      {/* Debug Panel (Development Only) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 right-4 bg-black bg-opacity-75 text-white p-3 rounded-lg text-xs max-w-xs">
+          <div className="font-bold mb-1">Debug Info</div>
+          <div>Taxonomy: {selectedTaxonomy}</div>
+          <div>Page: {page}/{totalPages}</div>
+          <div>Products: {products.length}/{totalProducts}</div>
+          <div>Filters: {Object.keys(filters).length}</div>
+          <div>API: {API_CONFIG.BASE_URL}</div>
+        </div>
+      )}
+
+      {/* {process.env.NODE_ENV === 'development' && (
+      <DebugPanel 
+        filters={filters}
+        filterOptions={filterOptions}
+        taxonomy={selectedTaxonomy}
+      />
+    )} */}
+    </div>
+  );
+};
+
+export default ProductListing;

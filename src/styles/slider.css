@@ -1,0 +1,31 @@
+/* Custom styles for React Slick slider */
+.brand-slider .slick-slider {
+  margin: 0 -8px;
+}
+
+.brand-slider .slick-track {
+  display: flex;
+  align-items: center;
+}
+
+.brand-slider .slick-slide {
+  padding: 0 8px;
+}
+
+.brand-slider .slick-slide > div {
+  height: 100%;
+}
+
+/* Hide default arrows and dots */
+.brand-slider .slick-arrow {
+  display: none !important;
+}
+
+.brand-slider .slick-dots {
+  display: none !important;
+}
+
+/* Ensure smooth transitions */
+.brand-slider .slick-list {
+  overflow: hidden;
+}
